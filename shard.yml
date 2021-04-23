@@ -1,0 +1,18 @@
+name: castblock
+version: 0.1.0
+
+authors:
+  - Alexandre Morignot <erdnaxeli@cervoi.se>
+
+targets:
+  castblock:
+    main: src/castblock.cr
+
+dependencies:
+  clip:
+    github: erdnaxeli/clip
+    version: ~>0.2
+
+crystal: 1.0.0
+
+license: MIT

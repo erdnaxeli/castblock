@@ -1,0 +1,6 @@
+version: 2.0
+shards:
+  clip:
+    git: https://github.com/erdnaxeli/clip.git
+    version: 0.2.4
+
