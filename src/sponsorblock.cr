@@ -56,7 +56,7 @@ class Castblock::Sponsorblock
 
     if response.status.server_error?
       3.times do
-        Log.warn &.emit("Received an error from Sponsorblock, retrying is 1s", status_code: response.status_code)
+        Log.warn &.emit("Received an error from Sponsorblock, retrying in 1s", status_code: response.status_code)
         sleep 1.second
 
         response = @client.get(path)
