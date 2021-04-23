@@ -15,7 +15,7 @@ class Castblock::Chromecast
 
   def initialize
     @bin = find_executable
-    start_server
+    spawn start_server
     while !@server_running
       sleep 0.5
     end
@@ -103,22 +103,19 @@ class Castblock::Chromecast
   end
 
   private def start_server : Nil
-    spawn do
-      loop do
-        Log.info { "Starting the go-chromecast server." }
-        Process.run(@bin, args: ["httpserver", "-p", "8011"]) do |process|
-          @server_running = true
+    loop do
+      Log.info { "Starting the go-chromecast server." }
+      Process.run(@bin, args: ["httpserver", "-p", "8011"]) do |process|
+        @server_running = true
+        error = process.error.gets_to_end
+        @server_running = false
 
-          error = process.error.gets_to_end
-          @server_running = false
-
-          Log.error { "The go-chromecast server has quit." }
-          Log.error { error }
-        end
-
-        Log.error { "Trying to restart it in 5s." }
-        sleep 5.seconds
+        Log.error { "The go-chromecast server has quit." }
+        Log.error { error }
       end
+
+      Log.error { "Trying to restart it in 5s." }
+      sleep 5.seconds
     end
   end
 end
