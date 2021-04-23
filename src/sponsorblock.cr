@@ -29,7 +29,7 @@ class Castblock::Sponsorblock
   private def get_segments_internal(content_id : String) : Array(Segment)?
     params = URI::Params.encode({
       "category" => "sponsor",
-      "videoID" => content_id,
+      "videoID"  => content_id,
     })
     response = get("/api/skipSegments?" + params)
 
@@ -51,7 +51,7 @@ class Castblock::Sponsorblock
     end
   end
 
-  private def get(path : String, retries=3) : HTTP::Client::Response
+  private def get(path : String, retries = 3) : HTTP::Client::Response
     response = @client.get(path)
 
     if response.status.server_error?
@@ -64,6 +64,6 @@ class Castblock::Sponsorblock
       end
     end
 
-    return response
+    response
   end
 end

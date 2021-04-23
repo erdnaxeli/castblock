@@ -33,7 +33,7 @@ class Castblock::Chromecast
 
   def seek_to(device : Device, timestamp : Float64) : Nil
     params = HTTP::Params.encode({
-      "uuid" => device.uuid,
+      "uuid"    => device.uuid,
       "seconds" => timestamp.to_s,
     })
     response = client.post("/seek-to?" + params)
@@ -53,16 +53,16 @@ class Castblock::Chromecast
       Process.run(@bin, args: ["watch", "--output", "json", "--interval", "2", "-u", device.uuid]) do |process|
         while output = process.output.gets
           begin
-              message = WatchMessage.from_json(output)
+            message = WatchMessage.from_json(output)
           rescue ex
-            Log.debug { "Invalid message: #{ex.to_s}" }
+            Log.debug { "Invalid message: #{ex}" }
           else
             yield message
           end
         end
       end
 
-      Log.warn &.emit("go-chromecast has quit.",uuid: device.uuid)
+      Log.warn &.emit("go-chromecast has quit.", uuid: device.uuid)
       Log.warn &.emit("Restarting go-chromecast watcher in 5s.", uuid: device.uuid)
       sleep 5.seconds
     end
