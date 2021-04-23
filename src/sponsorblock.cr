@@ -38,7 +38,7 @@ class Castblock::Sponsorblock
     elsif response.status_code == 404
       nil
     else
-      Log.warn &.emit("Error from Sponsorblock", status_code: response.status_code, video_id: content_id)
+      Log.error &.emit("Error from Sponsorblock", status_code: response.status_code, video_id: content_id)
       nil
     end
   end
@@ -54,9 +54,9 @@ class Castblock::Sponsorblock
   private def get(path : String, retries=3) : HTTP::Client::Response
     response = @client.get(path)
 
-    if !response.status.server_error?
+    if response.status.server_error?
       3.times do
-        Log.debug &.emit("Received an error from Sponsorblock, retrying is 1s", status_code: response.status_code)
+        Log.warn &.emit("Received an error from Sponsorblock, retrying is 1s", status_code: response.status_code)
         sleep 1.second
 
         response = @client.get(path)

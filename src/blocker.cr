@@ -67,7 +67,7 @@ class Castblock::Blocker
         begin
           @chromecast.seek_to(device, segment.segment[1] - 1)
         rescue Chromecast::CommandError
-          Log.warn { "Error while seeking" }
+          Log.error { "Error while seeking" }
         end
         break
       end

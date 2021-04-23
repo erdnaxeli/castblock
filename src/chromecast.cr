@@ -46,10 +46,10 @@ class Castblock::Chromecast
 
   def start_watcher(device : Device, &block : WatchMessage ->) : Nil
     loop do
-      Log.info { "Connect to device" }
+      Log.info &.emit("Connect to device", uuid: device.uuid)
       connect(device)
 
-      Log.info { "Starting go-chromecast watch" }
+      Log.info &.emit("Starting go-chromecast watcher", uuid: device.uuid)
       Process.run(@bin, args: ["watch", "--output", "json", "--interval", "2", "-u", device.uuid]) do |process|
         while output = process.output.gets
           begin
@@ -62,8 +62,8 @@ class Castblock::Chromecast
         end
       end
 
-      Log.error { "go-chromecast has quit." }
-      Log.error { "Trying to restart it in 5s." }
+      Log.warn &.emit("go-chromecast has quit.",uuid: device.uuid)
+      Log.warn &.emit("Restarting go-chromecast watcher in 5s.", uuid: device.uuid)
       sleep 5.seconds
     end
   end
@@ -94,8 +94,8 @@ class Castblock::Chromecast
   private def find_executable : String
     bin = Process.find_executable("go-chromecast")
     if bin.nil?
-      Log.fatal { "No go-chromecast binary found in the PATH." }
-      raise "error"
+      Log.fatal { "No go-chromecast executable found in the PATH." }
+      raise "missing go-chromecast executable"
     end
 
     Log.info { "Found go-chromecast at #{bin}." }
@@ -110,11 +110,11 @@ class Castblock::Chromecast
         error = process.error.gets_to_end
         @server_running = false
 
-        Log.error { "The go-chromecast server has quit." }
-        Log.error { error }
+        Log.warn { "The go-chromecast server has quit." }
+        Log.warn { error }
       end
 
-      Log.error { "Trying to restart it in 5s." }
+      Log.warn { "Restart go-chromecast server in 5s." }
       sleep 5.seconds
     end
   end
