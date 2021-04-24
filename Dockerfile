@@ -7,6 +7,7 @@ FROM golang:alpine
 RUN go get -u github.com/vishen/go-chromecast
 
 FROM alpine
+RUN apk add tini
 COPY --from=0 /src/bin/castblock /usr/bin/castblock
 COPY --from=1 /go/bin/go-chromecast /usr/bin/go-chromecast
-ENTRYPOINT ["/usr/bin/castblock"]
+ENTRYPOINT ["/sbin/tini", "--", "/usr/bin/castblock"]
