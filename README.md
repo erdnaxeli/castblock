@@ -16,6 +16,10 @@ docker pull erdnaxeli/castblock:latest
 docker run --network="host" erdnaxeli/castblock
 ```
 
+The docker image supports amd64 and arm architecture.
+In particular it should run on all raspberry pi.
+If not, please open an issue :)
+
 ### From source
 
 You need to install [go-chromecast](https://github.com/vishen/go-chromecast) first, and to make it available in your PATH.
