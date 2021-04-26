@@ -44,10 +44,15 @@ class Castblock::Chromecast
     end
   end
 
-  def start_watcher(device : Device, &block : WatchMessage ->) : Nil
+  def start_watcher(device : Device, continue : Channel(Nil), &block : WatchMessage ->) : Nil
     loop do
       Log.info &.emit("Connect to device", uuid: device.uuid)
-      connect(device)
+      begin
+        connect(device)
+      rescue CommandError
+        continue.close
+        return
+      end
 
       Log.info &.emit("Starting go-chromecast watcher", uuid: device.uuid)
       Process.run(@bin, args: ["watch", "--output", "json", "--interval", "2", "-u", device.uuid]) do |process|
@@ -59,8 +64,15 @@ class Castblock::Chromecast
           else
             yield message
           end
+
+          if continue.closed?
+            process.terminate
+            return
+          end
         end
       end
+
+      return if continue.closed?
 
       Log.warn &.emit("go-chromecast has quit.", uuid: device.uuid)
       Log.warn &.emit("Restarting go-chromecast watcher in 5s.", uuid: device.uuid)
@@ -74,8 +86,14 @@ class Castblock::Chromecast
     })
     response = client.post("/connect?" + params)
 
-    if !response.status.success?
-      raise "Error: #{response.status_code}"
+    if !response.status.success? && response.body.chomp != "device uuid is already connected"
+      Log.error &.emit(
+        "Error while connecting to device",
+        uuid: device.uuid,
+        status_code: response.status_code,
+        error: response.body.chomp,
+      )
+      raise CommandError.new
     end
   end
 

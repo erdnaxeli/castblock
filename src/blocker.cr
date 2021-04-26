@@ -3,7 +3,7 @@ require "log"
 class Castblock::Blocker
   Log = Castblock::Log.for(self)
 
-  @devices = Hash(String, Chromecast::Device).new
+  @devices = Hash(Chromecast::Device, Channel(Nil)).new
 
   def initialize(@chromecast : Chromecast, @sponsorblock : Sponsorblock)
   end
@@ -15,29 +15,34 @@ class Castblock::Blocker
   private def watch_new_devices : Nil
     loop do
       Log.debug { "Checking for new devices" }
-      new_devices.each do |device|
-        spawn watch_device(device)
+      @devices.reject! { |_, continue| continue.closed? }
+
+      begin
+        devices = @chromecast.list_devices.to_set
+      rescue Chromecast::CommandError
+        Log.warn { "Error while listing devices" }
+      else
+        new_devices = devices - @devices.keys
+        new_devices.each do |device|
+          Log.info &.emit("New device found", name: device.device_name, uuid: device.uuid)
+          @devices[device] = Channel(Nil).new
+          spawn watch_device(device, @devices[device])
+        end
+
+        @devices.each_key do |device|
+          if !devices.includes?(device) && (continue = @devices.delete(device))
+            Log.info &.emit("A device is gone", name: device.device_name, uuid: device.uuid)
+            continue.close
+          end
+        end
       end
 
       sleep 30.seconds
     end
   end
 
-  private def new_devices : Array(Chromecast::Device)
-    @chromecast.list_devices.select! do |device|
-      if !@devices.has_key?(device.uuid)
-        @devices[device.uuid] = device
-        Log.info { "New device found: #{device.device_name} " }
-        true
-      end
-    end
-  rescue Chromecast::CommandError
-    Log.warn { "Error while listing devices" }
-    Array(Chromecast::Device).new
-  end
-
-  private def watch_device(device : Chromecast::Device) : Nil
-    @chromecast.start_watcher(device) do |message|
+  private def watch_device(device : Chromecast::Device, continue : Channel(Nil)) : Nil
+    @chromecast.start_watcher(device, continue) do |message|
       Log.debug &.emit("Received message", application: message.application.display_name)
 
       if message.application.display_name.downcase == "youtube" && (media = message.media)

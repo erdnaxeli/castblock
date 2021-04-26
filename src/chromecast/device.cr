@@ -6,5 +6,7 @@ class Castblock::Chromecast
 
     getter device_name : String
     getter uuid : String
+
+    def_equals_and_hash @uuid
   end
 end
