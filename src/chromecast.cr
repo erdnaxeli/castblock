@@ -24,7 +24,7 @@ class Castblock::Chromecast
   def list_devices : Array(Device)
     response = client.get("/devices")
     if !response.status.success?
-      Log.debug &.emit("Error while getting devices", status_code: response.status_code)
+      Log.debug &.emit("Error while getting devices", status_code: response.status_code, error: response.body)
       raise CommandError.new
     end
 
@@ -39,7 +39,7 @@ class Castblock::Chromecast
     response = client.post("/seek-to?" + params)
 
     if !response.status.success?
-      Log.debug &.emit("Error with seek_to", status_code: response.status_code)
+      Log.error &.emit("Error with seek_to", status_code: response.status_code, error: response.body)
       raise CommandError.new
     end
   end
