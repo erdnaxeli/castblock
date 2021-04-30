@@ -1,5 +1,7 @@
 FROM crystallang/crystal:1.0.0-alpine
-COPY . /src
+COPY lib /src/lib
+COPY src /src/src
+COPY shard.yml shard.lock /src/
 WORKDIR /src
 RUN shards build --release --static
 
