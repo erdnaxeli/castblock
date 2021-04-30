@@ -1,0 +1,33 @@
+FROM --platform=linux/arm64/v8 alpine:edge AS crystal
+RUN echo '@edge http://dl-cdn.alpinelinux.org/alpine/edge/community' >>/etc/apk/repositories
+RUN apk add --update --no-cache --force-overwrite \
+  crystal@edge \
+  g++ \
+  gc-dev \
+  libxml2-dev \
+  llvm10-dev \
+  llvm10-static \
+  make \
+  musl-dev \
+  openssl-dev \
+  openssl-libs-static \
+  pcre-dev \
+  shards@edge \
+  yaml-dev \
+  yaml-static \
+  zlib-dev \
+  zlib-static
+COPY lib /src/lib
+COPY src /src/src
+COPY shard.yml shard.lock /src/
+WORKDIR /src
+RUN shards build --static --release
+
+FROM --platform=linux/arm64/v8 golang:alpine AS golang
+RUN go get -u github.com/vishen/go-chromecast
+
+FROM --platform=linux/arm64/v8 alpine:latest
+RUN apk add tini
+COPY --from=crystal /src/bin/castblock /usr/bin/castblock
+COPY --from=golang /go/bin/go-chromecast /usr/bin/go-chromecast
+ENTRYPOINT ["/sbin/tini", "--", "/usr/bin/castblock"]
