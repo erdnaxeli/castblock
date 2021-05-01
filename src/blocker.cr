@@ -15,7 +15,7 @@ class Castblock::Blocker
   private def watch_new_devices : Nil
     loop do
       Log.debug { "Checking for new devices" }
-      @devices.reject! { |_, continue| continue.closed? }
+      @devices.each { |device, continue| remove_device(device) if continue.closed? }
 
       begin
         devices = @chromecast.list_devices.to_set
@@ -24,15 +24,23 @@ class Castblock::Blocker
       else
         new_devices = devices - @devices.keys
         new_devices.each do |device|
-          Log.info &.emit("New device found", name: device.device_name, uuid: device.uuid)
-          @devices[device] = Channel(Nil).new
-          spawn watch_device(device, @devices[device])
+          Log.info &.emit("New device found", name: device.name, uuid: device.uuid)
+
+          Log.info &.emit("Connect to device", name: device.name, uuid: device.uuid)
+          begin
+            @chromecast.connect(device)
+          rescue Chromecast::CommandError
+            Log.error &.emit("Error while connecting", name: device.name, uuid: device.uuid)
+          else
+            @devices[device] = Channel(Nil).new
+            spawn watch_device(device, @devices[device])
+          end
         end
 
         @devices.each_key do |device|
-          if !devices.includes?(device) && (continue = @devices.delete(device))
-            Log.info &.emit("A device is gone", name: device.device_name, uuid: device.uuid)
-            continue.close
+          if !devices.includes?(device)
+            Log.info &.emit("A device is gone, stopping watcher", name: device.name, uuid: device.uuid)
+            remove_device(device)
           end
         end
       end
@@ -72,8 +80,28 @@ class Castblock::Blocker
         begin
           @chromecast.seek_to(device, segment.segment[1] - 1)
         rescue Chromecast::CommandError
+          Log.error &.emit("Trying to reconnect to the device", name: device.name, uuid: device.uuid)
+          @chromecast.disconnect(device)
+          begin
+            @chromecast.connect(device)
+          rescue Chromecast::CommandError
+            Log.error &.emit("Error while reconnecting to the device", name: device.name, uuid: device.uuid)
+            remove_device(device, disconnect: false)
+          end
         end
+
         break
+      end
+    end
+  end
+
+  private def remove_device(device : Chromecast::Device, disconnect = true) : Nil
+    if continue = @devices.delete(device)
+      continue.close
+
+      if disconnect
+        Log.info &.emit("Disconnecting from device", name: device.name, uuid: device.uuid)
+        @chromecast.disconnect(device)
       end
     end
   end
