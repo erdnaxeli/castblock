@@ -13,12 +13,14 @@ The impact of CastBlock on the CPU should be almost zero, and only a few dozen o
 
 ```
 docker pull erdnaxeli/castblock:latest
-docker run --network="host" erdnaxeli/castblock
+docker run --rm --network host erdnaxeli/castblock
 ```
 
-The docker image supports amd64 and arm architecture.
+The docker image supports amd64, arm and arm64 architectures.
 In particular it should run on all raspberry pi.
 If not, please open an issue :)
+
+The amd64 and arm64 images are based on Alpine and weigh only 20Mo, but due to [a missing cross compilation target](https://github.com/crystal-lang/crystal/issues/5467) the arm images use Debian and weights 47Mo.
 
 ### From source
 
@@ -30,13 +32,13 @@ The binary is in `./bin/castblock`.
 
 Run CastBlock in the same network as the Chromecast.
 
-It will detect all Chromecast, watches their activity and skip any sponsor segment using the [SponsorBlock](https://sponsor.ajay.app/) API.
+It will detect all Chromecast, watch their activity and skip any sponsor segment using the [SponsorBlock](https://sponsor.ajay.app/) API.
 
 New devices are detected every 30s.
 Segments shorter that 5s cannot be skipped. The last 20 videos' segments are cached to limit the number on queries on SponsorBlock.
 
-If you have any issue, please run CastBlock with the `--debug` flag, try to reproduce your problem and past the output in your issue.
-You can use the flag with docker too like this: `docker run --network="host" erdnaxeli/castblock --debug`.
+If you have any issue, please run CastBlock with the `--debug` flag, try to reproduce your problem and past the output in the issue.
+You can use the flag with docker too like this: `docker run --rm --network host erdnaxeli/castblock --debug`.
 
 ## Contributing
 
