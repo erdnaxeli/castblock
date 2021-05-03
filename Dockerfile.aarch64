@@ -24,7 +24,7 @@ WORKDIR /src
 RUN shards build --static --release
 
 FROM --platform=linux/arm64/v8 golang:alpine AS golang
-RUN go get -u github.com/vishen/go-chromecast
+RUN go get -u github.com/vishen/go-chromecast@b6046c0e348882fc33edee60cd5abbd96590c104
 
 FROM --platform=linux/arm64/v8 alpine:latest
 RUN apk add tini

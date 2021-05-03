@@ -1,4 +1,4 @@
-docker-all: docker docker-arm docker-aarch64 docker-push-all docker-manifest
+docker-all: docker docker-arm docker-aarch64
 
 docker-arm:
 	docker build --pull -t erdnaxeli/castblock:arm -f Dockerfile.arm .
