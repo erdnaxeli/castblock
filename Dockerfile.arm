@@ -25,7 +25,7 @@ COPY --from=0 /src/castblock.o .
 RUN cc castblock.o -o castblock  -rdynamic -L/usr/bin/../lib/crystal/lib -lz `command -v pkg-config > /dev/null && pkg-config --libs --silence-errors libssl || printf %s '-lssl -lcrypto'` `command -v pkg-config > /dev/null && pkg-config --libs --silence-errors libcrypto || printf %s '-lcrypto'` -lpcre -lm -lgc -lpthread src/ext/libcrystal.a -levent -lrt -ldl
 
 FROM --platform=linux/arm/v7 golang:buster
-RUN go get -u github.com/vishen/go-chromecast
+RUN go get -u github.com/vishen/go-chromecast@b6046c0e348882fc33edee60cd5abbd96590c104
 
 FROM --platform=linux/arm/v7 debian:buster-slim
 RUN apt-get update && apt-get install -y \

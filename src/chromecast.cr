@@ -46,17 +46,17 @@ class Castblock::Chromecast
 
   def start_watcher(device : Device, continue : Channel(Nil), &block : WatchMessage ->) : Nil
     loop do
-      Log.info &.emit("Connect to device", uuid: device.uuid)
-      begin
-        connect(device)
-      rescue CommandError
-        continue.close
-        return
-      end
-
-      Log.info &.emit("Starting go-chromecast watcher", uuid: device.uuid)
-      Process.run(@bin, args: ["watch", "--output", "json", "--interval", "2", "-u", device.uuid]) do |process|
+      Log.info &.emit("Starting go-chromecast watcher", name: device.name, uuid: device.uuid)
+      Process.run(
+        @bin,
+        args: ["watch", "--output", "json", "--interval", "2", "-u", device.uuid, "--retries", "1"],
+      ) do |process|
         while output = process.output.gets
+          if continue.closed?
+            process.terminate
+            return
+          end
+
           begin
             message = WatchMessage.from_json(output)
           rescue ex
@@ -64,36 +64,49 @@ class Castblock::Chromecast
           else
             yield message
           end
-
-          if continue.closed?
-            process.terminate
-            return
-          end
         end
       end
 
       return if continue.closed?
 
-      Log.warn &.emit("go-chromecast has quit.", uuid: device.uuid)
-      Log.warn &.emit("Restarting go-chromecast watcher in 5s.", uuid: device.uuid)
+      Log.warn &.emit("go-chromecast has quit.", name: device.name, uuid: device.uuid)
+      Log.warn &.emit("Restarting go-chromecast watcher in 5s.", name: device.name, uuid: device.uuid)
       sleep 5.seconds
     end
   end
 
-  private def connect(device : Device) : Nil
+  def connect(device : Device) : Nil
     params = HTTP::Params.encode({
       "uuid" => device.uuid,
     })
     response = client.post("/connect?" + params)
 
     if !response.status.success? && response.body.chomp != "device uuid is already connected"
-      Log.error &.emit(
+      Log.debug &.emit(
         "Error while connecting to device",
+        name: device.name,
         uuid: device.uuid,
         status_code: response.status_code,
         error: response.body.chomp,
       )
       raise CommandError.new
+    end
+  end
+
+  def disconnect(device : Device) : Nil
+    params = HTTP::Params.encode({
+      "uuid" => device.uuid,
+    })
+    response = client.post("/disconnect?" + params)
+
+    if !response.status.success?
+      Log.warn &.emit(
+        "Error while disconnecting from device",
+        name: device.name,
+        uuid: device.uuid,
+        status_code: response.status_code,
+        error: response.body.chomp,
+      )
     end
   end
 
