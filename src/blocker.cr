@@ -1,11 +1,12 @@
 require "log"
+require "math"
 
 class Castblock::Blocker
   Log = Castblock::Log.for(self)
 
   @devices = Hash(Chromecast::Device, Channel(Nil)).new
 
-  def initialize(@chromecast : Chromecast, @sponsorblock : Sponsorblock)
+  def initialize(@chromecast : Chromecast, @sponsorblock : Sponsorblock, @seek_to_offset : Int32)
   end
 
   def run : Nil
@@ -69,16 +70,19 @@ class Castblock::Blocker
     end
 
     segments.each do |segment|
-      if segment.segment[0] <= media.current_time < segment.segment[1] - 5
+      segment_start = segment.segment[0]
+      segment_end = Math.min(segment.segment[1], media.media.duration).to_f
+
+      if segment_start <= media.current_time < segment_end - Math.max(5, @seek_to_offset)
         Log.info &.emit(
           "Found a sponsor segment, skipping it.",
           id: media.media.content_id,
-          start: segment.segment[0],
-          end: segment.segment[1],
+          start: segment_start,
+          end: segment_end,
         )
 
         begin
-          @chromecast.seek_to(device, segment.segment[1] - 1)
+          @chromecast.seek_to(device, segment_end - @seek_to_offset)
         rescue Chromecast::CommandError
           Log.error &.emit("Trying to reconnect to the device", name: device.name, uuid: device.uuid)
           @chromecast.disconnect(device)

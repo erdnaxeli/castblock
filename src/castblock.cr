@@ -13,6 +13,10 @@ module Castblock
     include Clip::Mapper
 
     @debug : Bool? = nil
+    @[Clip::Option("--offset")]
+    @[Clip::Doc("When skipping a sponsor segment, jump to this number of seconds before " \
+                "the end of the segment.")]
+    @seek_to_offset = 0
 
     def run
       if @debug
@@ -21,7 +25,7 @@ module Castblock
 
       chromecast = Chromecast.new
       sponsorblock = Sponsorblock.new
-      blocker = Blocker.new(chromecast, sponsorblock)
+      blocker = Blocker.new(chromecast, sponsorblock, @seek_to_offset)
 
       blocker.run
     end
