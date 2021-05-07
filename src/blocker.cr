@@ -53,7 +53,7 @@ class Castblock::Blocker
     @chromecast.start_watcher(device, continue) do |message|
       Log.debug &.emit("Received message", application: message.application.display_name)
 
-      if message.application.display_name.downcase == "youtube" && (media = message.media)
+      if message.application.display_name.downcase == "youtube" && (media = message.media) && media.player_state == "PLAYING"
         handle_media(device, media)
       end
     end
