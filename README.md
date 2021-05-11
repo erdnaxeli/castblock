@@ -40,6 +40,14 @@ Segments shorter that 5s cannot be skipped. The last 20 videos' segments are cac
 If you have any issue, please run CastBlock with the `--debug` flag, try to reproduce your problem and past the output in the issue.
 You can use the flag with docker too like this: `docker run --rm --network host erdnaxeli/castblock --debug`.
 
+Available options:
+
+* `--offset`: set an offset to use before the end of the segment, in seconds.
+  An offset of 2 means that it will seek 2s before the end of the segmend.
+* `--category`: specify the category of segment to skip.
+  It can be repeated to specify many categories.
+  Default to "sponsor".
+
 ## Contributing
 
 1. Fork it (<https://github.com/erdnaxeli/castblock/fork>)

@@ -75,7 +75,7 @@ class Castblock::Blocker
 
       if segment_start <= media.current_time < segment_end - Math.max(5, @seek_to_offset)
         Log.info &.emit(
-          "Found a sponsor segment, skipping it.",
+          "Found a #{segment.category} segment, skipping it.",
           id: media.media.content_id,
           start: segment_start,
           end: segment_end,
