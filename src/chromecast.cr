@@ -17,7 +17,7 @@ class Castblock::Chromecast
     @bin = find_executable
     spawn start_server
     while !@server_running
-      sleep 0.5
+      sleep 500.milliseconds
     end
   end
 
@@ -137,6 +137,18 @@ class Castblock::Chromecast
     loop do
       Log.info { "Starting the go-chromecast server." }
       Process.run(@bin, args: ["httpserver", "-p", "8011"]) do |process|
+        loop do
+          begin
+            HTTP::Client.get("http://127.0.0.1:8011/")
+          rescue e : Socket::ConnectError
+            sleep 500.milliseconds
+          else
+            break
+          end
+        end
+
+        Log.info { "The go-chromecast server is up" }
+
         @server_running = true
         error = process.error.gets_to_end
         @server_running = false
