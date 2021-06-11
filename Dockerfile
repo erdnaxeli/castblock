@@ -1,8 +1,8 @@
 FROM crystallang/crystal:1.0.0-alpine
-COPY lib /src/lib
-COPY src /src/src
-COPY shard.yml shard.lock /src/
 WORKDIR /src
+COPY shard.yml shard.lock /src/
+RUN shards install --production
+COPY src /src/src
 RUN shards build --release --static
 
 FROM golang:alpine
