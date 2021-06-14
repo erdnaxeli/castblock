@@ -15,6 +15,6 @@ docker-push-all:
 	docker push erdnaxeli/castblock:amd64
 
 docker-manifest:
-	rm -rv ${HOME}/.docker/manifests/docker.io_erdnaxeli_castblock-latest/
+	(test -d ${HOME}/.docker/manifests/docker.io_erdnaxeli_castblock-latest/ && rm -rv ${HOME}/.docker/manifests/docker.io_erdnaxeli_castblock-latest/) || true
 	docker manifest create erdnaxeli/castblock:latest -a erdnaxeli/castblock:amd64 -a erdnaxeli/castblock:arm -a erdnaxeli/castblock:aarch64
 	docker manifest push erdnaxeli/castblock:latest
