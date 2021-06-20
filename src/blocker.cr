@@ -110,10 +110,10 @@ class Castblock::Blocker
 
   private def handle_monetization(device : Chromecast::Device, player_state : Int) : Nil
     if player_state == 1081
-      Log.info &.emit("Found ad, muting audio", device: device.device_name)
+      Log.info &.emit("Found ad, muting audio", device: device.name)
       @chromecast.set_mute(device, true)
     else
-      Log.info &.emit("Ad ended, unmuting audio", device: device.device_name)
+      Log.info &.emit("Ad ended, unmuting audio", device: device.name)
       @chromecast.set_mute(device, false)
     end
   end
