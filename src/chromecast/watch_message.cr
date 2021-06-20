@@ -24,6 +24,7 @@ class Castblock::Chromecast
 
       @[JSON::Field(key: "contentId")]
       getter content_id : String
+      getter duration : Float64
     end
 
     @[JSON::Field(key: "playerState")]

@@ -4,7 +4,8 @@ class Castblock::Chromecast
   struct Device
     include JSON::Serializable
 
-    getter device_name : String
+    @[JSON::Field(key: "device_name")]
+    getter name : String
     getter uuid : String
 
     def_equals_and_hash @uuid

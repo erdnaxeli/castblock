@@ -2,18 +2,27 @@ require "http"
 require "uri"
 
 class Castblock::Sponsorblock
+  class CategoryError < Exception
+  end
+
   Log = Castblock::Log.for(self)
 
   struct Segment
     include JSON::Serializable
 
+    getter category : String
     getter segment : Tuple(Float64, Float64)
   end
 
   @cache = Hash(String, Array(Segment)?).new
 
-  def initialize
+  def initialize(@categories : Set(String))
     @client = HTTP::Client.new("sponsor.ajay.app", tls: true)
+
+    if !@categories.subset_of?(Set{"sponsor", "intro", "outro", "selfpromo", "interaction", "music_offtopic"})
+      Log.fatal { "Invalid categories #{@categories.join(", ")}. Available categories are sponsor, intro, outro, selfpromo, interaction or music_offtopic." }
+      raise CategoryError.new
+    end
   end
 
   def get_segments(content_id : String) : Array(Segment)?
@@ -28,7 +37,7 @@ class Castblock::Sponsorblock
 
   private def get_segments_internal(content_id : String) : Array(Segment)?
     params = URI::Params.encode({
-      "category" => "sponsor",
+      "categories" => @categories.to_json,
       "videoID"  => content_id,
     })
     response = get("/api/skipSegments?" + params)
