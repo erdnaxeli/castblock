@@ -13,6 +13,7 @@ module Castblock
     include Clip::Mapper
 
     @debug : Bool? = nil
+    @mute_ads : Bool = false
 
     def run
       if @debug
@@ -21,7 +22,7 @@ module Castblock
 
       chromecast = Chromecast.new
       sponsorblock = Sponsorblock.new
-      blocker = Blocker.new(chromecast, sponsorblock)
+      blocker = Blocker.new(chromecast, sponsorblock, @mute_ads)
 
       blocker.run
     end

@@ -4,8 +4,9 @@ class Castblock::Chromecast
   struct WatchMessage
     include JSON::Serializable
 
-    getter application : Application
+    getter application : Application?
     getter media : Media?
+    getter payload : String?
   end
 
   struct Application

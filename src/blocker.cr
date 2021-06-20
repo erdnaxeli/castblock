@@ -1,11 +1,12 @@
 require "log"
+require "json"
 
 class Castblock::Blocker
   Log = Castblock::Log.for(self)
 
   @devices = Hash(Chromecast::Device, Channel(Nil)).new
 
-  def initialize(@chromecast : Chromecast, @sponsorblock : Sponsorblock)
+  def initialize(@chromecast : Chromecast, @sponsorblock : Sponsorblock, @mute_ads : Bool)
   end
 
   def run : Nil
@@ -43,10 +44,18 @@ class Castblock::Blocker
 
   private def watch_device(device : Chromecast::Device, continue : Channel(Nil)) : Nil
     @chromecast.start_watcher(device, continue) do |message|
-      Log.debug &.emit("Received message", application: message.application.display_name)
+      if application = message.application
+        Log.debug &.emit("Received message", application: application.display_name)
+        if application.display_name.downcase == "youtube" && (media = message.media)
+          handle_media(device, media)
+        end
+      end
 
-      if message.application.display_name.downcase == "youtube" && (media = message.media)
-        handle_media(device, media)
+      if @mute_ads && (payload = message.payload)
+        data = JSON.parse(payload)
+        if data["status"]? && (player_state = data["status"][0]["customData"]["playerState"].as_i)
+          handle_monetization(device, player_state)
+        end
       end
     end
   end
@@ -75,6 +84,16 @@ class Castblock::Blocker
         end
         break
       end
+    end
+  end
+
+  private def handle_monetization(device : Chromecast::Device, player_state : Int) : Nil
+    if player_state == 1081
+      Log.info &.emit("Found ad, muting audio", device: device.device_name)
+      @chromecast.set_mute(device, true)
+    else
+      Log.info &.emit("Ad ended, unmuting audio", device: device.device_name)
+      @chromecast.set_mute(device, false)
     end
   end
 end
