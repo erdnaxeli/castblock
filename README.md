@@ -47,6 +47,8 @@ Available options:
 * `--category`: specify the category of segment to skip.
   It can be repeated to specify many categories.
   Default to "sponsor".
+* `--mute-ads`: enable auto mute during native YouTube ads. These are different
+  from in-video sponsors, and are typically blocked by browser extension ad blockers
 
 ## Contributing
 
