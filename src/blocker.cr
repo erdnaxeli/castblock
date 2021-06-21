@@ -1,6 +1,5 @@
 require "log"
 require "math"
-require "json"
 
 class Castblock::Blocker
   Log = Castblock::Log.for(self)
@@ -60,10 +59,13 @@ class Castblock::Blocker
         end
       end
 
-      if @mute_ads && (payload = message.payload)
-        data = JSON.parse(payload)
-        if data["status"]? && (player_state = data["status"][0]["customData"]["playerState"].as_i)
-          handle_monetization(device, player_state)
+      if @mute_ads && (payload = message.payload_data)
+        if payload.status[0].custom_data.player_state == 1081 && payload.status[0].volume.muted == false
+          Log.info &.emit("Found ad, muting audio", device: device.name)
+          @chromecast.set_mute(device, true)
+        elsif payload.status[0].custom_data.player_state != 1081 && payload.status[0].volume.muted
+          Log.info &.emit("Ad ended, unmuting audio", device: device.name)
+          @chromecast.set_mute(device, false)
         end
       end
     end
@@ -105,16 +107,6 @@ class Castblock::Blocker
 
         break
       end
-    end
-  end
-
-  private def handle_monetization(device : Chromecast::Device, player_state : Int) : Nil
-    if player_state == 1081
-      Log.info &.emit("Found ad, muting audio", device: device.name)
-      @chromecast.set_mute(device, true)
-    else
-      Log.info &.emit("Ad ended, unmuting audio", device: device.name)
-      @chromecast.set_mute(device, false)
     end
   end
 
