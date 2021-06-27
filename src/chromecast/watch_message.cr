@@ -7,8 +7,7 @@ class Castblock::Chromecast
     getter application : Application?
     getter media : Media?
     getter payload : String?
-    getter payload_data : WatchMessagePayload?
-    setter payload_data : WatchMessagePayload?
+    property payload_data : WatchMessagePayload?
   end
 
   struct Application

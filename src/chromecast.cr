@@ -71,8 +71,12 @@ class Castblock::Chromecast
 
           begin
             message = WatchMessage.from_json(output)
-            if message.payload && (payload_data = WatchMessagePayload.from_json(message.payload.as(String)))
-              message.payload_data = payload_data
+            message.payload.as?(String).try do |payload|
+              begin
+                message.payload_data = WatchMessagePayload.from_json(payload)
+              rescue ex
+                Log.debug { "Unhandled payload: #{ex}" }
+              end
             end
           rescue ex
             Log.debug { "Invalid message: #{ex}" }

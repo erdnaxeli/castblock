@@ -21,7 +21,7 @@ module Castblock
     @[Clip::Doc("The category to block. It can be repeated to block multiple categories.")]
     @categories = ["sponsor"]
     @[Clip::Option("--mute-ads")]
-    @[Clip::Doc("Enable auto muting adsense ads on youtube")]
+    @[Clip::Doc("Enable auto muting adsense ads on youtube.")]
     @mute_ads : Bool = false
 
     def run : Nil
