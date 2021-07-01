@@ -20,7 +20,7 @@ The docker image supports amd64, arm and arm64 architectures.
 In particular it should run on all raspberry pi.
 If not, please open an issue :)
 
-The amd64 and arm64 images are based on Alpine and weigh only 20Mo, but due to [a missing cross compilation target](https://github.com/crystal-lang/crystal/issues/5467) the arm images use Debian and weights 47Mo.
+The amd64 and arm64 images are based on Alpine and weigh only 20Mo, but due to [a missing cross compilation target](https://github.com/crystal-lang/crystal/issues/5467) the arm images use Debian and weights 47Mo.
 
 ### From source
 
@@ -42,13 +42,20 @@ You can use the flag with docker too like this: `docker run --rm --network host 
 
 Available options:
 
+* `--debug`: run the app with the debug logs.
 * `--offset`: set an offset to use before the end of the segment, in seconds.
   An offset of 2 means that it will seek 2s before the end of the segmend.
-* `--category`: specify the category of segment to skip.
+* `--category`: specify the [category of segments](https://github.com/ajayyy/SponsorBlock/wiki/Types#category) to skip.
   It can be repeated to specify many categories.
   Default to "sponsor".
 * `--mute-ads`: enable auto mute during native YouTube ads. These are different
   from in-video sponsors, and are typically blocked by browser extension ad blockers.
+
+All options can also be read from the environment variables:
+
+* `DEBUG=true`
+* `OFFSET=1`
+* `CATEGORIES=sponsor,interaction`
 
 ## Contributing
 

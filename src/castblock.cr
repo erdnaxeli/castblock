@@ -18,13 +18,31 @@ module Castblock
                 "the end of the segment.")]
     @seek_to_offset = 0
     @[Clip::Option("--category")]
-    @[Clip::Doc("The category to block. It can be repeated to block multiple categories.")]
+    @[Clip::Doc("The category of segments to block. It can be repeated to block multiple categories.")]
     @categories = ["sponsor"]
     @[Clip::Option("--mute-ads")]
     @[Clip::Doc("Enable auto muting adsense ads on youtube.")]
     @mute_ads : Bool = false
 
+    def read_env
+      # If a config option equals its default value, we try to read it from the env.
+      # This is a temporary hack while waiting for Clip to handle it in a better way.
+      if @debug.nil? && (debug = ENV["DEBUG"]?)
+        @debug = debug.downcase == "true"
+      end
+
+      if @seek_to_offset == 0 && (seek_to_offset = ENV["OFFSET"]?)
+        @seek_to_offset == seek_to_offset.to_i
+      end
+
+      if @categories == ["sponsor"] && (categories = ENV["CATEGORIES"]?)
+        @categories = categories.split(',')
+      end
+    end
+
     def run : Nil
+      read_env
+
       if @debug
         ::Log.setup(:debug)
       end
