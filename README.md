@@ -48,7 +48,7 @@ Available options:
   It can be repeated to specify many categories.
   Default to "sponsor".
 * `--mute-ads`: enable auto mute during native YouTube ads. These are different
-  from in-video sponsors, and are typically blocked by browser extension ad blockers
+  from in-video sponsors, and are typically blocked by browser extension ad blockers.
 
 ## Contributing
 
@@ -61,3 +61,4 @@ Available options:
 ## Contributors
 
 - [erdnaxeli](https://github.com/erdnaxeli) - creator and maintainer
+- [stephen304](https://github.com/stephen304) - contributor and ad blocking enthusiast
