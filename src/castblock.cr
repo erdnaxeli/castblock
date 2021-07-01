@@ -38,6 +38,10 @@ module Castblock
       if @categories == ["sponsor"] && (categories = ENV["CATEGORIES"]?)
         @categories = categories.split(',')
       end
+
+      if @mute_ads == false && (mute_ads = ENV["MUTE_ADS"]?)
+        @mute_ads = mute_ads.downcase == "true"
+      end
     end
 
     def run : Nil

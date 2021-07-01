@@ -56,6 +56,7 @@ All options can also be read from the environment variables:
 * `DEBUG=true`
 * `OFFSET=1`
 * `CATEGORIES=sponsor,interaction`
+* `MUTE_ADS=true`
 
 ## Contributing
 
