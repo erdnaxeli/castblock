@@ -1,0 +1,8 @@
+version: '3.3'
+services:
+  castblock:
+    network_mode: host
+    image: erdnaxeli/castblock
+    environment:
+      - CATEGORIES=sponsor,selfpromo
+      # Full list of categories https://github.com/ajayyy/SponsorBlock/wiki/Types#category
