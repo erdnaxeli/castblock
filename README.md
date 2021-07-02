@@ -48,12 +48,15 @@ Available options:
 * `--category`: specify the [category of segments](https://github.com/ajayyy/SponsorBlock/wiki/Types#category) to skip.
   It can be repeated to specify many categories.
   Default to "sponsor".
+* `--mute-ads`: enable auto mute during native YouTube ads. These are different
+  from in-video sponsors, and are typically blocked by browser extension ad blockers.
 
 All options can also be read from the environment variables:
 
 * `DEBUG=true`
 * `OFFSET=1`
 * `CATEGORIES=sponsor,interaction`
+* `MUTE_ADS=true`
 
 ## Contributing
 
@@ -66,3 +69,4 @@ All options can also be read from the environment variables:
 ## Contributors
 
 - [erdnaxeli](https://github.com/erdnaxeli) - creator and maintainer
+- [stephen304](https://github.com/stephen304) - contributor and ad blocking enthusiast

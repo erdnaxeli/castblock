@@ -4,8 +4,10 @@ class Castblock::Chromecast
   struct WatchMessage
     include JSON::Serializable
 
-    getter application : Application
+    getter application : Application?
     getter media : Media?
+    getter payload : String?
+    property payload_data : WatchMessagePayload?
   end
 
   struct Application
@@ -31,5 +33,32 @@ class Castblock::Chromecast
     @[JSON::Field(key: "currentTime")]
     getter current_time : Float64
     getter media : Media
+  end
+
+  struct WatchMessagePayload
+    include JSON::Serializable
+
+    struct PayloadStatus
+      include JSON::Serializable
+
+      struct PayloadVolume
+        include JSON::Serializable
+
+        getter muted : Bool
+      end
+
+      struct PayloadCustomData
+        include JSON::Serializable
+
+        @[JSON::Field(key: "playerState")]
+        getter player_state : Int32
+      end
+
+      getter volume : PayloadVolume
+      @[JSON::Field(key: "customData")]
+      getter custom_data : PayloadCustomData
+    end
+
+    getter status : Array(PayloadStatus)
   end
 end

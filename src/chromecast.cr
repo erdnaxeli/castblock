@@ -44,6 +44,18 @@ class Castblock::Chromecast
     end
   end
 
+  def set_mute(device : Device, value : Bool) : Nil
+    params = HTTP::Params.encode({
+      "uuid"    => device.uuid,
+    })
+    response = client.post("/#{value ? "" : "un"}mute?" + params)
+
+    if !response.status.success?
+      Log.error &.emit("Error with mute", status_code: response.status_code, error: response.body)
+      raise CommandError.new
+    end
+  end
+
   def start_watcher(device : Device, continue : Channel(Nil), &block : WatchMessage ->) : Nil
     loop do
       Log.info &.emit("Starting go-chromecast watcher", name: device.name, uuid: device.uuid)
@@ -59,6 +71,13 @@ class Castblock::Chromecast
 
           begin
             message = WatchMessage.from_json(output)
+            message.payload.as?(String).try do |payload|
+              begin
+                message.payload_data = WatchMessagePayload.from_json(payload)
+              rescue ex
+                Log.debug { "Unhandled payload: #{ex}" }
+              end
+            end
           rescue ex
             Log.debug { "Invalid message: #{ex}" }
           else

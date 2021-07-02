@@ -20,6 +20,9 @@ module Castblock
     @[Clip::Option("--category")]
     @[Clip::Doc("The category of segments to block. It can be repeated to block multiple categories.")]
     @categories = ["sponsor"]
+    @[Clip::Option("--mute-ads")]
+    @[Clip::Doc("Enable auto muting adsense ads on youtube.")]
+    @mute_ads : Bool = false
 
     def read_env
       # If a config option equals its default value, we try to read it from the env.
@@ -34,6 +37,10 @@ module Castblock
 
       if @categories == ["sponsor"] && (categories = ENV["CATEGORIES"]?)
         @categories = categories.split(',')
+      end
+
+      if @mute_ads == false && (mute_ads = ENV["MUTE_ADS"]?)
+        @mute_ads = mute_ads.downcase == "true"
       end
     end
 
@@ -51,7 +58,7 @@ module Castblock
       end
 
       chromecast = Chromecast.new
-      blocker = Blocker.new(chromecast, sponsorblock, @seek_to_offset)
+      blocker = Blocker.new(chromecast, sponsorblock, @seek_to_offset, @mute_ads)
 
       blocker.run
     end
