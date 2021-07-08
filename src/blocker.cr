@@ -6,7 +6,7 @@ class Castblock::Blocker
 
   @devices = Hash(Chromecast::Device, Channel(Nil)).new
 
-  def initialize(@chromecast : Chromecast, @sponsorblock : Sponsorblock, @seek_to_offset : Int32, @mute_ads : Bool)
+  def initialize(@chromecast : Chromecast, @sponsorblock : Sponsorblock, @seek_to_offset : Int32, @mute_ads : Bool, @merge_threshold : Float64)
   end
 
   def run : Nil
@@ -91,6 +91,14 @@ class Castblock::Blocker
           start: segment_start,
           end: segment_end,
         )
+
+        sorted_segments = segments.sort { |x, y| x.segment[0] <=> y.segment[0] }
+        sorted_segments.each do |segment_next|
+          if segment_next.segment[0] - @merge_threshold <= segment_end < segment_next.segment[1]
+            Log.info &.emit("Segment extended from #{segment_end} to #{segment_next.segment[1]}.")
+            segment_end = Math.min(segment_next.segment[1], media.media.duration).to_f
+          end
+        end
 
         begin
           @chromecast.seek_to(device, segment_end - @seek_to_offset)
