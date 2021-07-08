@@ -84,14 +84,16 @@ class Castblock::Blocker
       segment_start = segment.segment[0]
       segment_end = Math.min(segment.segment[1], media.media.duration).to_f
 
-      if segment_start <= media.current_time < segment_end - Math.max(5, @seek_to_offset)
+      # Check if we are in the segment
+      if segment_start <= media.current_time < segment_end
         Log.info &.emit(
-          "Found a #{segment.category} segment, skipping it.",
+          "Found a #{segment.category} segment.",
           id: media.media.content_id,
           start: segment_start,
           end: segment_end,
         )
 
+        # Extend segment_end using merge_threshold
         sorted_segments = segments.sort { |x, y| x.segment[0] <=> y.segment[0] }
         sorted_segments.each do |segment_next|
           if segment_next.segment[0] - @merge_threshold <= segment_end < segment_next.segment[1]
@@ -100,20 +102,30 @@ class Castblock::Blocker
           end
         end
 
-        begin
-          @chromecast.seek_to(device, segment_end - @seek_to_offset)
-        rescue Chromecast::CommandError
-          Log.error &.emit("Trying to reconnect to the device", name: device.name, uuid: device.uuid)
-          @chromecast.disconnect(device)
+        # Check if the segment meets minimum length
+        if media.current_time < segment_end - Math.max(5, @seek_to_offset)
+          Log.info &.emit(
+            "Segment meets criteria, skipping it.",
+            id: media.media.content_id,
+            start: segment_start,
+            end: segment_end,
+          )
           begin
-            @chromecast.connect(device)
+            @chromecast.seek_to(device, segment_end - @seek_to_offset)
           rescue Chromecast::CommandError
-            Log.error &.emit("Error while reconnecting to the device", name: device.name, uuid: device.uuid)
-            remove_device(device, disconnect: false)
+            Log.error &.emit("Trying to reconnect to the device", name: device.name, uuid: device.uuid)
+            @chromecast.disconnect(device)
+            begin
+              @chromecast.connect(device)
+            rescue Chromecast::CommandError
+              Log.error &.emit("Error while reconnecting to the device", name: device.name, uuid: device.uuid)
+              remove_device(device, disconnect: false)
+            end
           end
+          # Only break if segment met the criteria and was skipped
+          break
         end
 
-        break
       end
     end
   end
