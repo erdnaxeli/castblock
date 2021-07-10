@@ -48,6 +48,8 @@ Available options:
 * `--category`: specify the [category of segments](https://github.com/ajayyy/SponsorBlock/wiki/Types#category) to skip.
   It can be repeated to specify many categories.
   Default to "sponsor".
+* `--merge-threshold`: The maximum number of seconds between segments to be merged.
+  Adjust this value to skip multiple adjacent segments that don't overlap.
 * `--mute-ads`: enable auto mute during native YouTube ads. These are different
   from in-video sponsors, and are typically blocked by browser extension ad blockers.
 

@@ -23,6 +23,11 @@ module Castblock
     @[Clip::Option("--mute-ads")]
     @[Clip::Doc("Enable auto muting adsense ads on youtube.")]
     @mute_ads : Bool = false
+    @[Clip::Option("--merge-threshold")]
+    @[Clip::Doc("The maximum number of seconds between segments to be merged. " \
+                "Adjust this value to skip multiple adjacent segments that don't overlap.")]
+    @merge_threshold = 0.0
+
 
     def read_env
       # If a config option equals its default value, we try to read it from the env.
@@ -42,6 +47,10 @@ module Castblock
       if @mute_ads == false && (mute_ads = ENV["MUTE_ADS"]?)
         @mute_ads = mute_ads.downcase == "true"
       end
+
+      if @merge_threshold == 0.0 && (merge_threshold = ENV["MERGE_THRESHOLD"]?)
+        @merge_threshold == merge_threshold.to_f
+      end
     end
 
     def run : Nil
@@ -58,7 +67,7 @@ module Castblock
       end
 
       chromecast = Chromecast.new
-      blocker = Blocker.new(chromecast, sponsorblock, @seek_to_offset, @mute_ads)
+      blocker = Blocker.new(chromecast, sponsorblock, @seek_to_offset, @mute_ads, @merge_threshold)
 
       blocker.run
     end
