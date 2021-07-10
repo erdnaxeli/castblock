@@ -28,7 +28,6 @@ module Castblock
                 "Adjust this value to skip multiple adjacent segments that don't overlap.")]
     @merge_threshold = 0.0
 
-
     def read_env
       # If a config option equals its default value, we try to read it from the env.
       # This is a temporary hack while waiting for Clip to handle it in a better way.

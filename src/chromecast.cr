@@ -46,7 +46,7 @@ class Castblock::Chromecast
 
   def set_mute(device : Device, value : Bool) : Nil
     params = HTTP::Params.encode({
-      "uuid"    => device.uuid,
+      "uuid" => device.uuid,
     })
     response = client.post("/#{value ? "" : "un"}mute?" + params)
 

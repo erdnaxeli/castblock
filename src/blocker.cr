@@ -125,7 +125,6 @@ class Castblock::Blocker
           # Only break if segment met the criteria and was skipped
           break
         end
-
       end
     end
   end
