@@ -13,6 +13,7 @@ The impact of CastBlock on the CPU should be almost zero, and only a few dozen o
 
 ```
 docker pull erdnaxeli/castblock:latest
+# Run CastBlock in foreground, add -d after "run" to run it in background.
 docker run --rm --network host erdnaxeli/castblock
 ```
 
