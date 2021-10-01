@@ -74,7 +74,12 @@ class Castblock::Blocker
   private def handle_media(device : Chromecast::Device, media : Chromecast::Media) : Nil
     Log.debug &.emit("Youtube video playing", id: media.media.content_id, current_time: media.current_time)
 
-    segments = @sponsorblock.get_segments(media.media.content_id)
+    begin
+      segments = @sponsorblock.get_segments(media.media.content_id)
+    rescue Sponsorblock::Error
+      return
+    end
+
     if segments.nil?
       Log.debug &.emit("Unknown video", id: media.media.content_id)
       return
