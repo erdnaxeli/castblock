@@ -1,5 +1,5 @@
 name: castblock
-version: 0.1.0
+version: 0.1.1
 
 authors:
   - Alexandre Morignot <erdnaxeli@cervoi.se>
@@ -17,6 +17,6 @@ development_dependencies:
   ameba:
     github: crystal-ameba/ameba
 
-crystal: 1.0.0
+crystal: ">= 1.0.0, < 1.2"
 
 license: MIT
