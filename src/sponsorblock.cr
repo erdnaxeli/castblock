@@ -2,7 +2,10 @@ require "http"
 require "uri"
 
 class Castblock::Sponsorblock
-  class CategoryError < Exception
+  class Error < Exception
+  end
+
+  class CategoryError < Error
   end
 
   Log = Castblock::Log.for(self)
@@ -61,7 +64,12 @@ class Castblock::Sponsorblock
   end
 
   private def get(path : String, retries = 3) : HTTP::Client::Response
-    response = @client.get(path)
+    begin
+      response = @client.get(path)
+    rescue ex : Socket::Addrinfo::Error
+      Log.warn &.emit("DNS error", error: ex.to_s)
+      raise Error.new(cause: ex)
+    end
 
     if response.status.server_error?
       3.times do
