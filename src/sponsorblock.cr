@@ -40,7 +40,7 @@ class Castblock::Sponsorblock
 
   private def get_segments_internal(content_id : String) : Array(Segment)?
     params = URI::Params.encode({
-      "categories" => @categories.to_json,
+      "category" => @categories,
       "videoID"    => content_id,
     })
     response = get("/api/skipSegments?" + params)
