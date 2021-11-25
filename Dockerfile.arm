@@ -1,28 +1,24 @@
-FROM crystallang/crystal:1.0.0-alpine
+FROM crystallang/crystal:1.1.1-alpine
 WORKDIR /src
 COPY shard.yml shard.lock /src/
 RUN shards install --production
 COPY src /src/src
 RUN crystal build --release --cross-compile --target armv6k-unknown-linux-gnueabihf src/castblock.cr
 
-FROM --platform=linux/arm/v7 debian:buster-slim AS crystal
+FROM --platform=linux/arm/v7 debian:bullseye-slim AS crystal
 WORKDIR /src
 RUN apt-get update
 RUN apt-get install -y \
   g++ \
-  git \
-  libpcre3-dev \
   libevent-dev \
   libgc-dev \
+  libpcre3-dev \
   libssl-dev \
   libxml2-dev \
-  llvm \
-  make \
+  llvm-dev \
   zlib1g-dev
-RUN git clone --depth 1 --branch 1.0.0 https://github.com/crystal-lang/crystal.git .
-RUN make libcrystal
 COPY --from=0 /src/castblock.o .
-RUN cc castblock.o -o castblock  -rdynamic -L/usr/bin/../lib/crystal/lib -lz `command -v pkg-config > /dev/null && pkg-config --libs --silence-errors libssl || printf %s '-lssl -lcrypto'` `command -v pkg-config > /dev/null && pkg-config --libs --silence-errors libcrypto || printf %s '-lcrypto'` -lpcre -lm -lgc -lpthread src/ext/libcrystal.a -levent -lrt -ldl
+RUN cc castblock.o -o castblock  -rdynamic -L/usr/bin/../lib/crystal -lz `command -v pkg-config > /dev/null && pkg-config --libs --silence-errors libssl || printf %s '-lssl -lcrypto'` `command -v pkg-config > /dev/null && pkg-config --libs --silence-errors libcrypto || printf %s '-lcrypto'` -lpcre -lm -lgc -lpthread -levent -lrt -ldl
 
 FROM golang:buster AS golang
 RUN git clone https://github.com/vishen/go-chromecast.git && cd go-chromecast && git checkout b6046c0e
@@ -30,10 +26,11 @@ ARG GOOS=linux
 ARG GOARCH=arm
 RUN cd go-chromecast && go build -o /go/bin/go-chromecast
 
-FROM --platform=linux/arm/v7 debian:buster-slim
+FROM --platform=linux/arm/v7 debian:bullseye-slim
 RUN apt-get update && apt-get install -y \
         ca-certificates \
-        libgc1c2 libevent-2.1-6 \
+        libgc1 \
+        libevent-2.1-7 \
         libssl1.1 \
         tini \
     && c_rehash  # see https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=923479
