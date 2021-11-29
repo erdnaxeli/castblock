@@ -80,7 +80,9 @@ class Castblock::Blocker
       return
     end
 
-    if segments.nil?
+    return if segments.nil?
+
+    if segments.size == 0
       Log.debug &.emit("Unknown video", id: media.media.content_id)
       return
     end

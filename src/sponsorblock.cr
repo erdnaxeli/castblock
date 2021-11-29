@@ -33,7 +33,11 @@ class Castblock::Sponsorblock
       @cache[content_id]
     else
       segments = get_segments_internal(content_id)
-      save(content_id, segments)
+
+      if !segments.nil?
+        save(content_id, segments)
+      end
+
       segments
     end
   end
@@ -53,14 +57,14 @@ class Castblock::Sponsorblock
         nil
       end
     elsif response.status_code == 404
-      nil
+      Array(Segment).new
     else
       Log.error &.emit("Error from Sponsorblock", status_code: response.status_code, video_id: content_id)
       nil
     end
   end
 
-  private def save(content_id : String, segments : Array(Segment)?) : Nil
+  private def save(content_id : String, segments : Array(Segment)) : Nil
     @cache[content_id] = segments
 
     if @cache.size > 20
