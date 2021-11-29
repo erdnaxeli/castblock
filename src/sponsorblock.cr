@@ -46,7 +46,12 @@ class Castblock::Sponsorblock
     response = get("/api/skipSegments?" + params)
 
     if response.status.success?
-      Array(Segment).from_json(response.body)
+      begin
+        Array(Segment).from_json(response.body)
+      rescue e : JSON::ParseException
+        Log.error &.emit("Error when reading JSON from Sponsorblock", error: e.to_s, json: response.body)
+        nil
+      end
     elsif response.status_code == 404
       nil
     else
