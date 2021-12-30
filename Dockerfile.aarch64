@@ -25,7 +25,7 @@ RUN shards build --static --release
 
 FROM golang:alpine AS golang
 RUN apk add git
-RUN git clone https://github.com/vishen/go-chromecast.git && cd go-chromecast && git checkout b6046c0e
+RUN git clone https://github.com/johnmurphyme/go-chromecast.git && cd go-chromecast && git checkout b6046c0e
 ARG GOOS=linux
 ARG GOARCH=arm64
 RUN cd go-chromecast && go build -o /go/bin/go-chromecast
