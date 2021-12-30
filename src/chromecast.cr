@@ -57,7 +57,7 @@ class Castblock::Chromecast
   end
 
   def skip_ad(device : Device) : Nil
-  sleep(5)
+    sleep(5)
     params = HTTP::Params.encode({
       "uuid" => device.uuid,
     })
