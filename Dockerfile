@@ -6,7 +6,7 @@ COPY src /src/src
 RUN shards build --release --static
 
 FROM golang:alpine
-RUN go get -u github.com/johnmurphyme/go-chromecast@v0.2.10.1
+RUN go get -u github.com/johnmurphyme/go-chromecast@v0.2.10.2
 
 FROM alpine
 RUN apk add tini
