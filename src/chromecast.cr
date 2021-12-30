@@ -60,7 +60,7 @@ class Castblock::Chromecast
     params = HTTP::Params.encode({
       "uuid" => device.uuid,
     })
-    response = client.post("/skipad?" + params)
+    response = client.post("/skip-ad?" + params)
 
     if !response.status.success?
       Log.error &.emit("Error with skipad", status_code: response.status_code, error: response.body)
