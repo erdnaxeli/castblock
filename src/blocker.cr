@@ -63,7 +63,7 @@ class Castblock::Blocker
         if payload.status[0].custom_data.player_state == 1081 && payload.status[0].volume.muted == false
           Log.info &.emit("Found ad, muting audio", device: device.name)
           @chromecast.set_mute(device, true)
-          @chromecast.skipad(device)
+          @chromecast.skip_ad(device)
         elsif payload.status[0].custom_data.player_state != 1081 && payload.status[0].volume.muted
           Log.info &.emit("Ad ended, unmuting audio", device: device.name)
           @chromecast.set_mute(device, false)

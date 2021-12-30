@@ -57,14 +57,13 @@ class Castblock::Chromecast
   end
 
   def skip_ad(device : Device) : Nil
-    sleep(5)
     params = HTTP::Params.encode({
       "uuid" => device.uuid,
     })
-    response = client.post("/skipad)
+    response = client.post("/skipad?" + params)
 
     if !response.status.success?
-      Log.error &.emit("Error with mute", status_code: response.status_code, error: response.body)
+      Log.error &.emit("Error with skipad", status_code: response.status_code, error: response.body)
       raise CommandError.new
     end
   end
