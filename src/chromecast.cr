@@ -56,6 +56,19 @@ class Castblock::Chromecast
     end
   end
 
+  def skip_ad(device : Device) : Nil
+  sleep(5)
+    params = HTTP::Params.encode({
+      "uuid" => device.uuid,
+    })
+    response = client.post("/skipad)
+
+    if !response.status.success?
+      Log.error &.emit("Error with mute", status_code: response.status_code, error: response.body)
+      raise CommandError.new
+    end
+  end
+
   def start_watcher(device : Device, continue : Channel(Nil), &block : WatchMessage ->) : Nil
     loop do
       Log.info &.emit("Starting go-chromecast watcher", name: device.name, uuid: device.uuid)
