@@ -14,8 +14,7 @@ module Castblock
 
     @debug : Bool? = nil
     @[Clip::Option("--offset")]
-    @[Clip::Doc("When skipping a sponsor segment, jump to this number of seconds before " \
-                "the end of the segment.")]
+    @[Clip::Doc("When skipping a sponsor segment, jump to this number of seconds before the end of the segment.")]
     @seek_to_offset = 0
     @[Clip::Option("--category")]
     @[Clip::Doc("The category of segments to block. It can be repeated to block multiple categories.")]
@@ -27,8 +26,7 @@ module Castblock
     @[Clip::Doc("Enable auto skipping adsense ads on youtube.")]
     @skip_ads : Bool = false
     @[Clip::Option("--merge-threshold")]
-    @[Clip::Doc("The maximum number of seconds between segments to be merged. " \
-                "Adjust this value to skip multiple adjacent segments that don't overlap.")]
+    @[Clip::Doc("The maximum number of seconds between segments to be merged. Adjust this value to skip multiple adjacent segments that don't overlap.")]
     @merge_threshold = 0.0
 
     def read_env
