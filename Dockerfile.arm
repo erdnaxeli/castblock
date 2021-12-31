@@ -21,7 +21,7 @@ COPY --from=0 /src/castblock.o .
 RUN cc castblock.o -o castblock  -rdynamic -L/usr/bin/../lib/crystal -lz `command -v pkg-config > /dev/null && pkg-config --libs --silence-errors libssl || printf %s '-lssl -lcrypto'` `command -v pkg-config > /dev/null && pkg-config --libs --silence-errors libcrypto || printf %s '-lcrypto'` -lpcre -lm -lgc -lpthread -levent -lrt -ldl
 
 FROM golang:buster AS golang
-RUN git clone https://github.com/johnmurphyme/go-chromecast.git && cd go-chromecast && git checkout b6046c0e
+RUN git clone https://github.com/vishen/go-chromecast.git && cd go-chromecast && git checkout b6046c0e
 ARG GOOS=linux
 ARG GOARCH=arm
 RUN cd go-chromecast && go build -o /go/bin/go-chromecast
