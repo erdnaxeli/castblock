@@ -61,7 +61,6 @@ class Castblock::Blocker
 
       if (payload = message.payload_data) && payload.status.size > 0
         if @mute_ads
-          # && (payload = message.payload_data) && payload.status.size > 0
           if payload.status[0].custom_data.player_state == 1081 && payload.status[0].volume.muted == false
             Log.info &.emit("Found ad, muting audio", device: device.name)
             @chromecast.set_mute(device, true)
