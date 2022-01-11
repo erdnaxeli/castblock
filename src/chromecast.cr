@@ -56,6 +56,19 @@ class Castblock::Chromecast
     end
   end
 
+  def skip_ad(device : Device) : Nil
+    params = HTTP::Params.encode({
+      "uuid" => device.uuid,
+    })
+    response = client.post("/skipad?" + params)
+
+    if !response.status.success?
+      Log.debug &.emit("Error with skipad", status_code: response.status_code, error: response.body)
+      # We do not want to raise an error based off the response from /skipad as the ad may already be skipped.
+      # The /skipad logic is run 30 times over 60 seconds until the ad is skipped, so subsequent requests as the watcher loops will fail
+    end
+  end
+
   def start_watcher(device : Device, continue : Channel(Nil), &block : WatchMessage ->) : Nil
     loop do
       Log.info &.emit("Starting go-chromecast watcher", name: device.name, uuid: device.uuid)
