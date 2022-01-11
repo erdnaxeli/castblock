@@ -69,7 +69,7 @@ class Castblock::Blocker
             @chromecast.set_mute(device, false)
           end
         end
-        if @skip_ads 
+        if @skip_ads
           if payload.status[0].custom_data.player_state == 1081
             Log.info &.emit("Found ad, skipping", device: device.name)
             @chromecast.skip_ad(device)
