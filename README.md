@@ -2,7 +2,7 @@
 
 Skip sponsor segments in YouTube videos playing on a Chromecast.
 
-This project is inspired by [CastBlock by stephen304](https://github.com/stephen304/castblock).
+This project is inspired by [CastBlock by stephen304](https://github.com/stephen304/castblock-legacy).
 It was rewritten in Crystal and uses the HTTP API exposed by [go-chromecast](https://github.com/vishen/go-chromecast) to be less CPU intensive.
 
 The impact of CastBlock on the CPU should be almost zero, and only a few dozen of Mo on the memory.

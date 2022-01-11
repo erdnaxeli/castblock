@@ -80,6 +80,16 @@ class Castblock::Blocker
     end
   end
 
+  private def handle_ad(device : Chromecast::Device, payload_status : Chromecast::WatchMessagePayload::PayloadStatus) : Nil
+    if payload_status.custom_data.player_state == 1081 && payload_status.volume.muted == false
+      Log.info &.emit("Found ad, muting audio", device: device.name)
+      @chromecast.set_mute(device, true)
+    elsif payload_status.custom_data.player_state != 1081 && payload_status.volume.muted
+      Log.info &.emit("Ad ended, unmuting audio", device: device.name)
+      @chromecast.set_mute(device, false)
+    end
+  end
+
   private def handle_media(device : Chromecast::Device, media : Chromecast::Media) : Nil
     Log.debug &.emit("Youtube video playing", id: media.media.content_id, current_time: media.current_time)
 

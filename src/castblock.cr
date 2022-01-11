@@ -32,28 +32,42 @@ module Castblock
     def read_env
       # If a config option equals its default value, we try to read it from the env.
       # This is a temporary hack while waiting for Clip to handle it in a better way.
-      if @debug.nil? && (debug = ENV["DEBUG"]?)
-        @debug = debug.downcase == "true"
-      end
+      @debug = read_env_bool(@debug, nil, "DEBUG")
+      @seek_to_offset = read_env_int(@seek_to_offset, 0, "OFFSET")
+      @categories = read_env_str_array(@categories, ["sponsor"], "CATEGORIES")
+      @mute_ads = read_env_bool(@mute_ads, false, "MUTE_ADS")
+      @merge_threshold = read_env_float(@merge_threshold, 0.0, "MERGE_THRESHOLD")
+    end
 
-      if @seek_to_offset == 0 && (seek_to_offset = ENV["OFFSET"]?)
-        @seek_to_offset == seek_to_offset.to_i
+    def read_env_bool(value : Bool?, default : Bool?, name : String) : Bool?
+      if value == default && (var = ENV[name]?)
+        var.downcase == "true"
+      else
+        value
       end
+    end
 
-      if @categories == ["sponsor"] && (categories = ENV["CATEGORIES"]?)
-        @categories = categories.split(',')
+    def read_env_str_array(value : Array(String), default : Array(String), name : String) : Array(String)
+      if value == default && (var = ENV[name]?)
+        var.split(',')
+      else
+        value
       end
+    end
 
-      if @mute_ads == false && (mute_ads = ENV["MUTE_ADS"]?)
-        @mute_ads = mute_ads.downcase == "true"
+    def read_env_int(value : Int, default : Int, name : String) : Int
+      if value == default && (var = ENV[name]?)
+        var.to_i
+      else
+        value
       end
+    end
 
-      if @skip_ads == false && (skip_ads = ENV["SKIP_ADS"]?)
-        @skip_ads = skip_ads.downcase == "true"
-      end
-
-      if @merge_threshold == 0.0 && (merge_threshold = ENV["MERGE_THRESHOLD"]?)
-        @merge_threshold == merge_threshold.to_f
+    def read_env_float(value : Float, default : Float, name : String) : Float
+      if value == default && (var = ENV[name]?)
+        var.to_f
+      else
+        value
       end
     end
 
