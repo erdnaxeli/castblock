@@ -37,14 +37,14 @@ services:
       # - OFFSET=2 # Optional
       # - MERGE_THRESHOLD=2 # Optional
       # - MUTE_ADS=true # Optional
-      # Full list of categories https://wiki.sponsor.ajay.app/w/Types
+      # Full list of categories https://wiki.sponsor.ajay.app/w/Types#Category
 ```
 
 Most environment variables are optional as can be seen, more info on what they do can be found in the [available options section](#available-options).
 
 ### From source
 
-You need to install [go-chromecast](https://wiki.sponsor.ajay.app/w/Types) first, and to make it available in your PATH.
+You need to install [go-chromecast](https://wiki.sponsor.ajay.app/w/Types#Category) first, and to make it available in your PATH.
 Then you need a working Crystal environment and run `shards build --release`.
 The binary is in `./bin/castblock`.
 

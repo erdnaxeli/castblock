@@ -5,4 +5,4 @@ services:
     image: erdnaxeli/castblock
     environment:
       - CATEGORIES=sponsor,selfpromo
-      # Full list of categories https://wiki.sponsor.ajay.app/w/Types
+      # Full list of categories https://wiki.sponsor.ajay.app/w/Types#Category
