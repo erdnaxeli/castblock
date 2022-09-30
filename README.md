@@ -23,6 +23,25 @@ If not, please open an issue :)
 
 The amd64 and arm64 images are based on Alpine and weigh only 20Mo, but due to [a missing cross compilation target](https://github.com/crystal-lang/crystal/issues/5467) the arm images use Debian and weights 47Mo.
 
+### Docker Compose
+
+```
+version: '3.3'
+services:
+  castblock:
+    network_mode: host
+    image: erdnaxeli/castblock
+    environment:
+      # Full list of categories https://wiki.sponsor.ajay.app/w/Types#Category
+      - CATEGORIES=sponsor,selfpromo
+      # - DEBUG=false # Optional
+      # - OFFSET=2 # Optional
+      # - MERGE_THRESHOLD=2 # Optional
+      # - MUTE_ADS=true # Optional
+```
+
+Most environment variables are optional as can be seen, more info on what they do can be found in the [available options section](#available-options).
+
 ### From source
 
 You need to install [go-chromecast](https://github.com/vishen/go-chromecast) first, and to make it available in your PATH.
@@ -41,7 +60,7 @@ Segments shorter that 5s cannot be skipped. The last 20 videos' segments are cac
 If you have any issue, please run CastBlock with the `--debug` flag, try to reproduce your problem and past the output in the issue.
 You can use the flag with docker too like this: `docker run --rm --network host erdnaxeli/castblock --debug`.
 
-Available options:
+### Available options
 
 * `--debug`: run the app with the debug logs.
 * `--offset`: set an offset to use before the end of the segment, in seconds.
