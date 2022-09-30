@@ -27,7 +27,7 @@ module Castblock
     @[Clip::Doc("Enable auto skipping adsense ads on youtube.")]
     @skip_ads : Bool = false
     @[Clip::Option("--merge-threshold")]
-    @[Clip::Doc("The maximum number of seconds between segments to be merged. "\
+    @[Clip::Doc("The maximum number of seconds between segments to be merged. " \
                 "Adjust this value to skip multiple adjacent segments that don't overlap.")]
     @merge_threshold = 0.0
 
