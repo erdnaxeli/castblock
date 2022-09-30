@@ -1,4 +1,4 @@
-FROM crystallang/crystal:1.1.1-alpine
+FROM crystallang/crystal:1.5-alpine
 WORKDIR /src
 COPY shard.yml shard.lock /src/
 RUN shards install --production
@@ -21,7 +21,7 @@ COPY --from=0 /src/castblock.o .
 RUN cc castblock.o -o castblock  -rdynamic -L/usr/bin/../lib/crystal -lz `command -v pkg-config > /dev/null && pkg-config --libs --silence-errors libssl || printf %s '-lssl -lcrypto'` `command -v pkg-config > /dev/null && pkg-config --libs --silence-errors libcrypto || printf %s '-lcrypto'` -lpcre -lm -lgc -lpthread -levent -lrt -ldl
 
 FROM golang:buster AS golang
-RUN git clone https://github.com/vishen/go-chromecast.git && cd go-chromecast && git checkout b6046c0e
+RUN git clone https://github.com/vishen/go-chromecast.git && cd go-chromecast && git checkout d2b4deef
 ARG GOOS=linux
 ARG GOARCH=arm
 RUN cd go-chromecast && go build -o /go/bin/go-chromecast
