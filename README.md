@@ -1,6 +1,6 @@
 # CastBlock
 
-Skip sponsor segments in YouTube videos playing on a Chromecast.
+Skip sponsor segments and ads in YouTube videos playing on a Chromecast.
 
 This project is inspired by [CastBlock by stephen304](https://github.com/stephen304/castblock-legacy).
 It was rewritten in Crystal and uses the HTTP API exposed by [go-chromecast](https://github.com/vishen/go-chromecast) to be less CPU intensive.
