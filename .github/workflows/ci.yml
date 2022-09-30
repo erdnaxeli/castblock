@@ -13,6 +13,6 @@ jobs:
       - name: Install dependencies
         run: shards install
       - name: Run lint
-        run: ./bin/ameba --except Metrics/CyclomaticComplexity
+        run: ./bin/ameba
       - name: Run format
         run: crystal tool format --check
