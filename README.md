@@ -72,6 +72,8 @@ You can use the flag with docker too like this: `docker run --rm --network host 
   Adjust this value to skip multiple adjacent segments that don't overlap.
 * `--mute-ads`: enable auto mute during native YouTube ads. These are different
   from in-video sponsors, and are typically blocked by browser extension ad blockers.
+* `--skip-ads`: enable auto skip during native YouTube ads. These are different
+  from in-video sponsors, and are typically blocked by browser extension ad blockers.
 
 All options can also be read from the environment variables:
 
@@ -79,6 +81,7 @@ All options can also be read from the environment variables:
 * `OFFSET=1`
 * `CATEGORIES=sponsor,interaction`
 * `MUTE_ADS=true`
+* `SKIP_ADS=true`
 
 ## Contributing
 

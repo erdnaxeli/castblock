@@ -1,19 +1,12 @@
-FROM --platform=linux/arm64/v8 alpine:edge AS crystal
+FROM --platform=linux/arm64/v8 alpine:3.16 AS crystal
 WORKDIR /src
 RUN echo '@edge http://dl-cdn.alpinelinux.org/alpine/edge/community' >>/etc/apk/repositories
 RUN apk add --update --no-cache --force-overwrite \
-  crystal@edge \
-  g++ \
-  gc-dev \
-  libxml2-dev \
-  llvm10-dev \
-  llvm10-static \
+  crystal \
   make \
-  musl-dev \
   openssl-dev \
   openssl-libs-static \
-  pcre-dev \
-  shards@edge \
+  shards \
   yaml-dev \
   yaml-static \
   zlib-dev \
@@ -21,11 +14,11 @@ RUN apk add --update --no-cache --force-overwrite \
 COPY shard.yml shard.lock /src/
 RUN shards install --production
 COPY src /src/src
-RUN shards build --static --release
+RUN shards build --production --static --release
 
 FROM golang:alpine AS golang
 RUN apk add git
-RUN git clone https://github.com/vishen/go-chromecast.git && cd go-chromecast && git checkout b6046c0e
+RUN git clone https://github.com/vishen/go-chromecast.git && cd go-chromecast && git checkout d2b4deef
 ARG GOOS=linux
 ARG GOARCH=arm64
 RUN cd go-chromecast && go build -o /go/bin/go-chromecast
