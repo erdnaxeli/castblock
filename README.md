@@ -32,19 +32,19 @@ services:
     network_mode: host
     image: erdnaxeli/castblock
     environment:
+      # Full list of categories https://wiki.sponsor.ajay.app/w/Types#Category
       - CATEGORIES=sponsor,selfpromo
       # - DEBUG=false # Optional
       # - OFFSET=2 # Optional
       # - MERGE_THRESHOLD=2 # Optional
       # - MUTE_ADS=true # Optional
-      # Full list of categories https://wiki.sponsor.ajay.app/w/Types#Category
 ```
 
 Most environment variables are optional as can be seen, more info on what they do can be found in the [available options section](#available-options).
 
 ### From source
 
-You need to install [go-chromecast](https://wiki.sponsor.ajay.app/w/Types#Category) first, and to make it available in your PATH.
+You need to install [go-chromecast](https://github.com/vishen/go-chromecast) first, and to make it available in your PATH.
 Then you need a working Crystal environment and run `shards build --release`.
 The binary is in `./bin/castblock`.
 
@@ -60,7 +60,7 @@ Segments shorter that 5s cannot be skipped. The last 20 videos' segments are cac
 If you have any issue, please run CastBlock with the `--debug` flag, try to reproduce your problem and past the output in the issue.
 You can use the flag with docker too like this: `docker run --rm --network host erdnaxeli/castblock --debug`.
 
-##### Available options:
+### Available options
 
 * `--debug`: run the app with the debug logs.
 * `--offset`: set an offset to use before the end of the segment, in seconds.
