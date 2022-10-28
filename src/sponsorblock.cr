@@ -19,8 +19,8 @@ class Castblock::Sponsorblock
 
   @cache = Hash(String, Array(Segment)?).new
 
-  def initialize(@categories : Set(String))
-    @client = HTTP::Client.new("sponsor.ajay.app", tls: true)
+  def initialize(hostname : String, tls : Bool, @categories : Set(String))
+    @client = HTTP::Client.new(hostname, tls: tls)
 
     if !@categories.subset_of?(Set{"sponsor", "intro", "outro", "selfpromo", "interaction", "music_offtopic", "preview"})
       Log.fatal { "Invalid categories #{@categories.join(", ")}. Available categories are sponsor, intro, outro, selfpromo, interaction, music_offtopic or preview." }

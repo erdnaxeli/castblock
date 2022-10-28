@@ -63,6 +63,7 @@ You can use the flag with docker too like this: `docker run --rm --network host 
 ### Available options
 
 * `--debug`: run the app with the debug logs.
+* `--sponsorblock-server`: specify the SponsorBlock server to use. Useful if you host one yourself.
 * `--offset`: set an offset to use before the end of the segment, in seconds.
   An offset of 2 means that it will seek 2s before the end of the segmend.
 * `--category`: specify the [category of segments](https://github.com/ajayyy/SponsorBlock/wiki/Types#category) to skip.
@@ -78,6 +79,7 @@ You can use the flag with docker too like this: `docker run --rm --network host 
 All options can also be read from the environment variables:
 
 * `DEBUG=true`
+* `SPONPSORBLOCK_SERVER=https://sponpsor.ajay.app`
 * `OFFSET=1`
 * `CATEGORIES=sponsor,interaction`
 * `MUTE_ADS=true`
