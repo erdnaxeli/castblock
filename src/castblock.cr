@@ -3,6 +3,7 @@ require "clip"
 require "./blocker"
 require "./chromecast"
 require "./sponsorblock"
+require "./youtube"
 
 module Castblock
   VERSION = "0.1.0"
@@ -40,6 +41,12 @@ module Castblock
                 "Adjust this value to skip multiple adjacent segments that don't overlap.")]
     @merge_threshold = 0.0
 
+    @[Clip::Option("--youtube-api-key")]
+    @[Clip::Doc("An API key that will be used to search for the video is the " \
+                "chromecast does not send its id. If not API key is provided, " \
+                "it fallbacks on a scrapping way.")]
+    @youtube_api_key : String? = nil
+
     def read_env
       # If a config option equals its default value, we try to read it from the env.
       # This is a temporary hack while waiting for Clip to handle it in a better way.
@@ -49,6 +56,10 @@ module Castblock
       @categories = read_env_str_array(@categories, ["sponsor"], "CATEGORIES")
       @mute_ads = read_env_bool(@mute_ads, false, "MUTE_ADS")
       @merge_threshold = read_env_float(@merge_threshold, 0.0, "MERGE_THRESHOLD")
+
+      if @youtube_api_key.nil? && (var = ENV["YOUTUBE_API_KEY"]?)
+        @youtube_api_key = var
+      end
     end
 
     def read_env_bool(value : Bool?, default : Bool?, name : String) : Bool?
@@ -117,7 +128,8 @@ module Castblock
       end
 
       chromecast = Chromecast.new
-      blocker = Blocker.new(chromecast, sponsorblock, @seek_to_offset, @mute_ads, @skip_ads, @merge_threshold)
+      youtube = Youtube.new(@youtube_api_key)
+      blocker = Blocker.new(chromecast, sponsorblock, youtube, @seek_to_offset, @mute_ads, @skip_ads, @merge_threshold)
 
       blocker.run
     end

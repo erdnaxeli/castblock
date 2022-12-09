@@ -6,7 +6,9 @@ class Castblock::Blocker
 
   @devices = Hash(Chromecast::Device, Channel(Nil)).new
 
-  def initialize(@chromecast : Chromecast, @sponsorblock : Sponsorblock, @seek_to_offset : Int32, @mute_ads : Bool, @skip_ads : Bool, @merge_threshold : Float64)
+  def initialize(@chromecast : Chromecast, @sponsorblock : Sponsorblock,
+                 @youtube : Youtube, @seek_to_offset : Int32, @mute_ads : Bool,
+                 @skip_ads : Bool, @merge_threshold : Float64)
   end
 
   def run : Nil
