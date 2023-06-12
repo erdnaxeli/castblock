@@ -36,8 +36,9 @@ services:
       - CATEGORIES=sponsor,selfpromo
       # - DEBUG=false # Optional
       # - OFFSET=2 # Optional
-      # - MERGE_THRESHOLD=2 # Optional
       # - MUTE_ADS=true # Optional
+      # - SKIP_ADS=true # Optional
+      # - MERGE_THRESHOLD=2 # Optional
 ```
 
 Most environment variables are optional as can be seen, more info on what they do can be found in the [available options section](#available-options).
@@ -84,6 +85,7 @@ All options can also be read from the environment variables:
 * `CATEGORIES=sponsor,interaction`
 * `MUTE_ADS=true`
 * `SKIP_ADS=true`
+* `MERGE_THRESHOLD=1`
 
 ## Contributing
 
