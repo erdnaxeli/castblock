@@ -80,7 +80,7 @@ You can use the flag with docker too like this: `docker run --rm --network host 
 All options can also be read from the environment variables:
 
 * `DEBUG=true`
-* `SPONPSORBLOCK_SERVER=https://sponpsor.ajay.app`
+* `SPONSORBLOCK_SERVER=https://sponsor.ajay.app`
 * `OFFSET=1`
 * `CATEGORIES=sponsor,interaction`
 * `MUTE_ADS=true`
