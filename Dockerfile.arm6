@@ -1,0 +1,55 @@
+ARG ARM_VERSION
+
+FROM crystallang/crystal:1.5-alpine
+
+ARG ARM_VERSION
+
+RUN apk upgrade crystal shards \
+--repository=http://dl-cdn.alpinelinux.org/alpine/edge/community \
+--repository=http://dl-cdn.alpinelinux.org/alpine/edge/main
+
+WORKDIR /src
+COPY shard.yml shard.lock /src/
+RUN shards install --production
+COPY src /src/src
+RUN crystal build --release --cross-compile --target armv6-rpi-linux-gnueabihf src/castblock.cr
+
+FROM --platform=linux/arm/v${ARM_VERSION} balenalib/raspberry-pi-debian:bullseye-run AS crystal
+WORKDIR /src
+RUN apt-get update
+RUN apt-get install -y \
+  g++ \
+  libevent-dev \
+  libgc-dev \
+  libpcre3-dev \
+  libssl-dev \
+  libxml2-dev \
+  llvm-dev \
+  zlib1g-dev
+COPY --from=0 /src/castblock.o .
+RUN cc castblock.o -o castblock -rdynamic -L/usr/bin/../lib/crystal -lz `command -v pkg-config > /dev/null && pkg-config --libs --silence-errors libssl || \
+    printf %s '-lssl -lcrypto'` `command -v pkg-config > /dev/null && pkg-config --libs --silence-errors libcrypto || \
+    printf %s '-lcrypto'` -lpcre -lm -lgc -lpthread -levent -lrt -ldl
+
+FROM golang:buster AS golang
+
+ARG ARM_VERSION
+
+RUN git clone https://github.com/vishen/go-chromecast.git && cd go-chromecast && git checkout d2b4deef
+ARG GOOS=linux
+ARG GOARCH=arm
+ARG GOARM=${ARM_VERSION}
+RUN cd go-chromecast && go build -o /go/bin/go-chromecast
+
+FROM --platform=linux/arm/v${ARM_VERSION} balenalib/raspberry-pi-debian:bullseye-run
+RUN apt-get update && apt-get install -y \
+        ca-certificates \
+        libgc1 \
+        libevent-2.1-7 \
+        libssl1.1 \
+        tini \
+        zlib1g \
+    && c_rehash  # see https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=923479
+COPY --from=crystal /src/castblock /usr/bin/castblock
+COPY --from=golang /go/bin/go-chromecast /usr/bin/go-chromecast
+ENTRYPOINT ["/usr/bin/tini", "--", "/usr/bin/castblock"]
